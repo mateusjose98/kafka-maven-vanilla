@@ -4,6 +4,58 @@
 ## Introdução
 O Apache Kafka é uma plataforma de streaming distribuída que é capaz de lidar com trilhões de eventos por dia. Ele foi originalmente desenvolvido pelo LinkedIn e depois doado para a Apache Software Foundation, tornando-se um projeto de código aberto.
 
+## Sobre o setup e comandos úteis
+
+### Rodando no Docker as imagens do confluentinc:
+
+```
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+```
+
+Docker image:
+confluentinc/cp-zookeeper:7.5.0
+confluentinc/cp-kafka:7.5.0
+
+### Testes dos comandos
+Acesse seu container
+```docker exec -it <ID_CONTAINER> /bin/bash```
+
+Criando um novo tópico com nome LOJA_NOVO_PEDIDO com 1 partição:
+```kafka-topics --create --topic LOJA_NOVO_PEDIDO --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1```
+
+Listando os tópicos existentes
+```kafka-topics --list --bootstrap-server localhost:9092```
+
+Produzindo mensagens
+```kafka-console-producer --broker-list localhost:9092 --topic LOJA_NOVO_PEDIDO```
+
+Consumindo mensagens desde o início da produção:
+```kafka-console-consumer --bootstrap-server localhost:9092 --topic LOJA_NOVO_PEDIDO --from-beginning```
+
+Apagar um tópico (perde as mensagens)
+
+kafka-topics --bootstrap-server localhost:9092 --delete --topic ECOMMERCE_PLACE_ORDER
+
 ## Arquitetura
 - **Producer**: é o responsável por publicar mensagens em um tópico.
 - **Consumer**: é o responsável por consumir mensagens de um tópico.
