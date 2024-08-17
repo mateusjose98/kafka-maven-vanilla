@@ -40,8 +40,8 @@ confluentinc/cp-kafka:7.5.0
 Acesse seu container
 ```docker exec -it <ID_CONTAINER> /bin/bash```
 
-Criando um novo tópico com nome LOJA_NOVO_PEDIDO com 1 partição:
-```kafka-topics --create --topic LOJA_NOVO_PEDIDO --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1```
+Criando um novo tópico com nome ECOMMERCE_PLACE_ORDER com 1 partição:
+```kafka-topics --create --topic ECOMMERCE_PLACE_ORDER --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1```
 
 Listando os tópicos existentes
 ```kafka-topics --list --bootstrap-server localhost:9092```
@@ -54,7 +54,7 @@ Consumindo mensagens desde o início da produção:
 
 Apagar um tópico (perde as mensagens)
 
-kafka-topics --bootstrap-server localhost:9092 --delete --topic ECOMMERCE_PLACE_ORDER
+```kafka-topics --bootstrap-server localhost:9092 --delete --topic ECOMMERCE_PLACE_ORDER```
 
 ## Arquitetura
 - **Producer**: é o responsável por publicar mensagens em um tópico.
@@ -68,8 +68,13 @@ kafka-topics --bootstrap-server localhost:9092 --delete --topic ECOMMERCE_PLACE_
 Observações: 
 - O número de partições de um tópico é definido no momento da criação do tópico. Se quisermos paralelismo de consumo, devemos ter mais de uma partição.
 - O número de consumidores em um grupo de consumidores deve ser menor ou igual ao número de partições de um tópico.
+- Se tivermos mais consumidores do que partições, alguns consumidores ficarão inativos.
+- Se tivermos no mesmo groupId N consumidores, esses consumidores irão dividir a carga do tópico.
+- Se o groupId for diferente, cada consumidor irá consumir todas as mensagens do tópico. Ocorre uma redundância de mensagens.
 
 
 ## Fluxo das mensagens no projeto
 
-![img.png](img.png)
+
+
+![img_1.png](img_1.png)

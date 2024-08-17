@@ -18,7 +18,7 @@ public class NewOrderMain {
         var emailDispatcher = new KafkaDispatcher<Email>();
 
         int i = 1;
-        while(i <= 15) {
+        while(i <= 150) {
             var userId = UUID.randomUUID().toString();
             var orderId = UUID.randomUUID().toString();
             var amount = new BigDecimal(Math.random() * 5000 + 1);
