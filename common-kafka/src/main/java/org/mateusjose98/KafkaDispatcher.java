@@ -31,7 +31,21 @@ public class KafkaDispatcher<T> implements Closeable {
                 topic,
                 key,
                 value);
-        producer.send(record, callback).get();
+        producer.send(record, callback == null ? defaultCallback() : callback).get();
+    }
+
+
+    private static Callback defaultCallback() {
+        return (data, ex) -> {
+            if (ex != null) {
+                ex.printStackTrace();
+                return;
+            }
+            System.out.println("Callback >> " + data.topic() +
+                    ":::partition " + data.partition() +
+                    "/ offset " + data.offset() +
+                    "/ timestamp " + data.timestamp());
+        };
     }
 
     public void close() {

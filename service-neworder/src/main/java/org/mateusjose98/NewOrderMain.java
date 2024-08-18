@@ -18,24 +18,24 @@ public class NewOrderMain {
         var emailDispatcher = new KafkaDispatcher<Email>();
 
         int i = 1;
-        while(i <= 150) {
-            var userId = UUID.randomUUID().toString();
+        var email = "email" + (Math.random() * 10 + 1) + "@gmail.com";
+        while(i <= 10) {
+
             var orderId = UUID.randomUUID().toString();
             var amount = new BigDecimal(Math.random() * 5000 + 1);
-            var order = new Order(userId, orderId, amount);
-            var sub = "email@email.com";
+            var order = new Order(orderId, amount, email);
             var emailValue = "Thank you for your order! We are processing your order!";
 
             orderDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER,
-                    UUID.randomUUID().toString(),
+                    email,
                     order,
                     getCallback());
 
             emailDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL,
                     UUID.randomUUID().toString(),
-                    new Email(sub, emailValue),
+                    new Email(email, emailValue),
                     getCallback());
-            Thread.sleep(1000);
+            Thread.sleep(100);
             i++;
         }
         orderDispatcher.close();
@@ -48,7 +48,7 @@ public class NewOrderMain {
                 ex.printStackTrace();
                 return;
             }
-            System.out.println(data.topic() +
+            System.out.println("Callback >> " + data.topic() +
                     ":::partition " + data.partition() +
                     "/ offset " + data.offset() +
                     "/ timestamp " + data.timestamp());

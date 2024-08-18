@@ -50,7 +50,7 @@ Produzindo mensagens
 ```kafka-console-producer --broker-list localhost:9092 --topic LOJA_NOVO_PEDIDO```
 
 Consumindo mensagens desde o início da produção:
-```kafka-console-consumer --bootstrap-server localhost:9092 --topic LOJA_NOVO_PEDIDO --from-beginning```
+```kafka-console-consumer --bootstrap-server localhost:9092 --topic ECOMMERCE_SEND_EMAIL --from-beginning --group EmailService```
 
 Apagar um tópico (perde as mensagens)
 

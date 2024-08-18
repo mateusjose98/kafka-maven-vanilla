@@ -5,11 +5,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 import java.io.Closeable;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 public class KafkaService<T> implements Closeable {
@@ -39,7 +41,11 @@ public class KafkaService<T> implements Closeable {
             if(!records.isEmpty()){
                 System.out.println("Qtde. " + records.count() + " registros");
                 for (var record : records) {
-                    this.parser.consume(record);
+                    try {
+                        this.parser.consume(record);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
