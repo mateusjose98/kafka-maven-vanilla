@@ -43,9 +43,15 @@ public class NewOrderServlet extends HttpServlet {
                                   KafkaDispatcher<Email> emailDispatcher) throws ExecutionException, InterruptedException {
 
         var orderPayload = new Order(orderId, amount, email);
-        orderDispatcher.send( KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER, email, orderPayload, null);
+        orderDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER,
+                email,
+                orderPayload,
+                new CorrelationId(NewOrderServlet.class.getSimpleName()),
+                null);
 
         var emailPayload = new Email(email, "Thank you for your order! We are processing your order!");
-        emailDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL, email, emailPayload,  null);
+        emailDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL, email, emailPayload,
+                new CorrelationId(NewOrderServlet.class.getSimpleName()),
+                null);
     }
 }

@@ -12,11 +12,12 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class KafkaDispatcher<T> implements Closeable {
-    private final KafkaProducer<String, T> producer;
-
+    private final KafkaProducer<String, Message<T>> producer;
     KafkaDispatcher() {
         this.producer = new KafkaProducer<>(properties());
     }
+
+
 
     private static Properties properties() {
         var properties = new Properties();
@@ -27,11 +28,12 @@ public class KafkaDispatcher<T> implements Closeable {
         return properties;
     }
 
-    public void send(String topic, String key, T value, Callback callback) throws ExecutionException, InterruptedException {
+    public void send(String topic, String key, T value, CorrelationId id, Callback callback) throws ExecutionException, InterruptedException {
+        var message = new Message<T>(id, value);
         var record = new ProducerRecord<>(
                 topic,
                 key,
-                value);
+                message);
         producer.send(record, callback == null ? defaultCallback() : callback).get();
     }
 

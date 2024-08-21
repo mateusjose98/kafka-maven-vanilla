@@ -46,11 +46,11 @@ public class CreateUserService {
         System.out.println("Usuário uuid e " + email + " adicionado");
     }
 
-    private void parse(ConsumerRecord<String, Order> record) throws  SQLException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws  SQLException {
         String message = String.format("Checking new user. Key: %s, Value: %s, Partition: %d, Offset: %d",
                 record.key(), record.value(), record.partition(), record.offset());
         System.out.println(message);
-        Order order = record.value();
+        Order order = record.value().getPayload();
         if(isNewUser(order.getEmail())) {
             insertNewUser(order.getEmail());
         } else {

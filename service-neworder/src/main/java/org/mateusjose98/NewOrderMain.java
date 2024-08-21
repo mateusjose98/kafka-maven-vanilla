@@ -29,11 +29,13 @@ public class NewOrderMain {
             orderDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER,
                     email,
                     order,
+                    new CorrelationId(NewOrderMain.class.getSimpleName()),
                     getCallback());
 
             emailDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL,
                     UUID.randomUUID().toString(),
                     new Email(email, emailValue),
+                    new CorrelationId(NewOrderMain.class.getSimpleName()),
                     getCallback());
             Thread.sleep(100);
             i++;

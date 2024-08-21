@@ -26,8 +26,6 @@ public class EmailService {
                 new HashMap<>())) {
             service.run();
         }
-
-
     }
 
 }

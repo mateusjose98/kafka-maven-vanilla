@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 public class FraudDetectorService {
     private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>();
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         String message = String.format("Processing order, checking for fraud. Key: %s, Value: %s, Partition: %d, Offset: %d",
                 record.key(), record.value(), record.partition(), record.offset());
         System.out.println(message);
@@ -19,18 +19,22 @@ public class FraudDetectorService {
             e.printStackTrace();
         }
 
-        Order order = record.value();
+        Order order = record.value().getPayload();
 
         if (isFraud(order)) {
             System.out.println("Order is a fraud!");
             orderDispatcher.send(
                     KAKFA_CONSTANTS.ECOMMERCE_ORDER_REJECTED,
-                    order.getEmail(), order, null);
+                    order.getEmail(), order,
+                    record.value().getId().continueWith(FraudDetectorService.class
+                            .getSimpleName()),null);
         } else {
             System.out.println("Approved: " + order);
             orderDispatcher.send(KAKFA_CONSTANTS.ECOMMERCE_ORDER_APPROVED,
                     order.getEmail(),
-                    order, null);
+                    order,  record.value().getId().continueWith(FraudDetectorService.class
+                            .getSimpleName()),
+                    null);
         }
 
     }

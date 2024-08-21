@@ -15,29 +15,30 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 public class KafkaService<T> implements Closeable {
-    private final KafkaConsumer<String, T> consumer;
+    private final KafkaConsumer<String, Message<T>> consumer;
     private final ConsumerFunction<T> parser;
-    public KafkaService(String groupName, String topic, ConsumerFunction<T> parser, Class<T> type,
+    public KafkaService(String groupName, String topic, ConsumerFunction parser, Class<T> type,
                         Map<String, String> properties) {
         this(groupName, parser, type, properties);
         consumer.subscribe(Collections.singletonList(topic));
     }
 
-    public KafkaService(String groupName, Pattern pattern, ConsumerFunction<T> parser,
+    public KafkaService(String groupName, Pattern pattern, ConsumerFunction parser,
                         Class<T> type, Map<String, String> properties) {
         this(groupName, parser, type, properties);
         consumer.subscribe(pattern);
     }
 
-    private KafkaService(String groupName, ConsumerFunction<T> parser, Class<T> type,  Map<String, String> properties) {
+    private KafkaService(String groupName, ConsumerFunction parser, Class<T> type,  Map<String, String> properties) {
         this.parser = parser;
         this.consumer = new KafkaConsumer<>(getProperties(groupName, type, properties));
     }
 
 
+
     public void run() {
         while(true) {
-            ConsumerRecords<String, T> records = consumer.poll(Duration.ofMillis(100));
+            ConsumerRecords<String, Message<T>> records = consumer.poll(Duration.ofMillis(100));
             if(!records.isEmpty()){
                 System.out.println("Qtde. " + records.count() + " registros");
                 for (var record : records) {
@@ -58,8 +59,6 @@ public class KafkaService<T> implements Closeable {
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupName);
         props.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, groupName +"_"+ UUID.randomUUID());
-        props.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
-
         props.putAll(overrideProperties);
         return props;
     }

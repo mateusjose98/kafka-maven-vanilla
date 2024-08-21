@@ -26,8 +26,9 @@ public class LogService {
         }
     }
 
-    private void parse(ConsumerRecord<String, String> record) {
-        System.out.println("[log] - " + record.topic() +" Key= " + record.key() + "  Value= " + record.value()
+    private void parse(ConsumerRecord<String, Message<String>> record) {
+        System.out.println("[log] - " + record.topic() +" Key= " + record.key() +
+                "  Value= " + record.value()
                 +" Partition="+ record.partition() + " Offset= " + record.offset());
     }
 
