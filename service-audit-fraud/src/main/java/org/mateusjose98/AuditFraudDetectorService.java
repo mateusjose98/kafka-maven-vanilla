@@ -3,6 +3,7 @@ package org.mateusjose98;
 import org.apache.kafka.clients.consumer.*;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 
 public class AuditFraudDetectorService {
@@ -13,8 +14,8 @@ public class AuditFraudDetectorService {
         System.out.println(message);
     }
 
-    public static void main(String[] args) {
-        try(var service = new KafkaService<Order>(
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        try(var service = new KafkaService(
                 "A",
                 KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER,
                 new AuditFraudDetectorService()::parse,

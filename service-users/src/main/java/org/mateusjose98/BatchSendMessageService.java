@@ -43,7 +43,7 @@ public class BatchSendMessageService {
         return users;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         var batchSendMessageService = new BatchSendMessageService();
         try ( var service = new KafkaService<>(
                         BatchSendMessageService.class.getSimpleName(),

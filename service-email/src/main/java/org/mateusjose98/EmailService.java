@@ -9,14 +9,16 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 public class EmailService {
 
-    private void parse(ConsumerRecord<String, Email> record) {
-        System.out.printf("Sending EMAIL. Key: %s, Value: %s, Partition: %d, Offset: %d%n", record.key(), record.value(), record.partition(), record.offset());
+    private void parse(ConsumerRecord<String, Message<Email>> record) {
+        System.out.printf("Sending EMAIL. Key: %s, Value: %s, Partition: %d, Offset: %d%n",
+                record.key(), record.value(), record.partition(), record.offset());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         EmailService emailService = new EmailService();
         try (KafkaService<Email> service = new KafkaService(
                 EmailService.class.getSimpleName(),

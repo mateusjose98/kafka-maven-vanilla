@@ -43,7 +43,7 @@ public class FraudDetectorService {
         return order.getAmount().compareTo(new BigDecimal("1500")) >= 0;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         try(var service = new KafkaService<Order>(
                 "A",
                 KAKFA_CONSTANTS.ECOMMERCE_PLACE_ORDER,

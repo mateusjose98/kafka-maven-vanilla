@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class ReadingReportService {
 
@@ -22,7 +23,7 @@ public class ReadingReportService {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         ReadingReportService readingReportService = new ReadingReportService();
         try (KafkaService<User> service = new KafkaService(
                 ReadingReportService.class.getSimpleName(),
