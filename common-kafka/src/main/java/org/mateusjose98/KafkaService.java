@@ -32,7 +32,10 @@ public class KafkaService<T> implements Closeable {
         consumer.subscribe(pattern);
     }
 
-    private KafkaService(String groupName, ConsumerFunction<T> parser, Class<T> type,  Map<String, String> properties) {
+    private KafkaService(String groupName,
+                         ConsumerFunction<T> parser,
+                         Class<T> type,
+                         Map<String, String> properties) {
         this.parser = parser;
         this.consumer = new KafkaConsumer<>(getProperties(groupName, type, properties));
     }
@@ -73,6 +76,7 @@ public class KafkaService<T> implements Closeable {
         props.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, groupName +"_"+ UUID.randomUUID());
         // lê de 1 em 1 mensagem
         props.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.putAll(overrideProperties);
         return props;
     }

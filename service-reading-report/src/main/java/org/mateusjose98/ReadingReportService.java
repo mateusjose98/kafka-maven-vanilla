@@ -3,14 +3,21 @@ package org.mateusjose98;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
-public class ReadingReportService {
+public class ReadingReportService implements ConsumerService<User> {
 
     private static final Path SOURCE = new File("src/main/resources/report.txt").toPath();
-    private void parse(ConsumerRecord<String, Message<User>> record) throws Exception {
+
+    @Override
+    public String getTopic() {
+        return KAKFA_CONSTANTS.ECOMMERCE_USER_GENERATE_REPORT;
+    }
+
+    public void parse(ConsumerRecord<String, Message<User>> record) throws IOException {
         System.out.printf("Processing REPORT for user Value: %s, Partition: %d, Offset: %d%n",
                 record.value(),
                 record.partition(),
@@ -23,15 +30,17 @@ public class ReadingReportService {
 
     }
 
+    @Override
+    public String getConsumerGroup() {
+        return ReadingReportService.class.getSimpleName();
+    }
+
+    @Override
+    public Class getType() {
+        return User.class;
+    }
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        ReadingReportService readingReportService = new ReadingReportService();
-        try (KafkaService<User> service = new KafkaService(
-                ReadingReportService.class.getSimpleName(),
-                KAKFA_CONSTANTS.ECOMMERCE_USER_GENERATE_REPORT,
-                readingReportService::parse,
-                User.class,
-                new HashMap<>())) {
-            service.run();
-        }
+        new ServiceRunner<>(ReadingReportService::new).start(5);
     }
 }

@@ -11,23 +11,29 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-public class EmailService {
+public class EmailService implements ConsumerService<Email> {
 
-    private void parse(ConsumerRecord<String, Message<Email>> record) {
+    public void parse(ConsumerRecord<String, Message<Email>> record) {
         System.out.printf("Sending EMAIL. Key: %s, Value: %s, Partition: %d, Offset: %d%n",
                 record.key(), record.value(), record.partition(), record.offset());
     }
 
+    public String getTopic() {
+        return KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL;
+    }
+
+
+    public String getConsumerGroup() {
+        return EmailService.class.getSimpleName();
+    }
+
+    @Override
+    public Class getType() {
+        return Email.class;
+    }
+
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        EmailService emailService = new EmailService();
-        try (KafkaService<Email> service = new KafkaService(
-                EmailService.class.getSimpleName(),
-                KAKFA_CONSTANTS.ECOMMERCE_SEND_EMAIL,
-                emailService::parse,
-                Email.class,
-                new HashMap<>())) {
-            service.run();
-        }
+        new ServiceRunner(EmailService::new).start(5);
     }
 
 }
