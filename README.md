@@ -8,33 +8,10 @@ O Apache Kafka é uma plataforma de streaming distribuída que é capaz de lidar
 
 ### Rodando no Docker as imagens do confluentinc:
 
-```
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    container_name: kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-```
-
-Docker image:
-confluentinc/cp-zookeeper:7.5.0
-confluentinc/cp-kafka:7.5.0
+Neste repositório, estou usando as imagens, que estão definidar no ```docker-compose.yml ```:
+- confluentinc/cp-zookeeper:7.5.0
+- confluentinc/cp-kafka:7.5.0
+- obsidiandynamics/kafdrop:latest
 
 ### Testes dos comandos
 Acesse seu container
@@ -76,4 +53,4 @@ Observações:
 ## Fluxo das mensagens no projeto
 
 
-![img.png](img.png)
+![img_2.png](img_2.png)
